@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer3_checked.xml" value="0.38871794871794874" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer3_selector.xml" value="0.38871794871794874" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer3_unchecked.xml" value="0.38871794871794874" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer4_checked.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer4_selector.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable-v24/radio_button_answer4_unchecked.xml" value="0.38871794871794874" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/ic_launcher_foreground_test.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer1_checked.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer1_selector.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer1_unchecked.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer2_checked.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer2_selector.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/drawable/radio_button_answer2_unchecked.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/layout/fragment_faragment_quiz.xml" value="0.19114583333333332" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/layout/fragment_quiz.xml" value="0.25" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/layout/fragment_scoreboard.xml" value="0.25" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/layout/score_board_model.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/menu/toolbar.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
+        <entry key="..\:/Users/mihai/AndroidStudioProjects/QuizGame/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3828125" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
