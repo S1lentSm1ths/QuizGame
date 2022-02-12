@@ -1,61 +1,51 @@
 package com.vsc.quizgame.view
 
-import android.content.ContentValues.TAG
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.textclassifier.TextLinks
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
-import android.widget.Toolbar
-import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.ViewPagerOnTabSelectedListener
 import com.vsc.quizgame.R
+import com.vsc.quizgame.databinding.ActivityMainBinding
 //import com.vsc.quizgame.view.Constants.Companion.BASE_URL
 import com.vsc.quizgame.view.adapters.ViewPagerAdapter
-import com.vsc.quizgame.view.api.Question
-import com.vsc.quizgame.view.api.QuestionApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
-import retrofit2.Retrofit
-import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener as OnTabSelectedListener1
+import com.vsc.quizgame.views.QuizFragment
 
 class MainActivity() : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
-    private lateinit var questionText: TextView
     private lateinit var correctAnswersCounter: TextView
-    private val fragmentQuiz = FragmentQuiz()
+    private val fragmentQuiz = QuizFragment()
+    var itemChoosed = "this"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        correctAnswersCounter = findViewById(R.id.correct_answers_counter)
+        itemChoosed = "Geography"
+        correctAnswersCounter = binding.correctAnswersCounter
         correctAnswersCounter.text = fragmentQuiz.serialCorrectAnswers.toString()
         setToolBarTitle()
         initTabLayout()
-        //getCurrentQuestion()
     }
 
     private fun setToolBarTitle() {
-        toolbar = findViewById(R.id.toolbar_menu)
+        toolbar = binding.toolbarMenu
         toolbar.title = "Quiz Game"
     }
 
     private fun initTabLayout() {
 
-        tabLayout = findViewById(R.id.tab_layout)
-        viewPager = findViewById(R.id.view_pager)
+        tabLayout = binding.tabLayout
+        viewPager = binding.viewPager
 
         tabLayout.addTab(tabLayout.newTab().setText("Questions"))
         tabLayout.addTab(tabLayout.newTab().setText("Scoreboard"))

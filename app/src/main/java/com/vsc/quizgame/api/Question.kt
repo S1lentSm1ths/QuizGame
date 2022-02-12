@@ -1,5 +1,8 @@
 package com.vsc.quizgame.view.api
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Question(
     val category: String,
     val correct_answer: String,

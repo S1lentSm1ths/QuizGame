@@ -1,123 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/layouts_background"
-    tools:context=".view.FragmentQuiz">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/example_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Some question"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layout_background"
+        tools:context=".views.QuizFragment">
 
-    <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@+id/example_question"
-        app:layout_constraintStart_toStartOf="@+id/example_question"
-        app:layout_constraintTop_toBottomOf="@+id/example_question">
-
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/first_answer_button"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/drop_down_menu"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/color_wrong_answer"
+            android:padding="20dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            android:spinnerMode="dialog"
+            />
+
+
+        <LinearLayout
+            android:id="@+id/question_box"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/radio_button_answer1_selector"
-            android:button="@android:color/transparent"
-            android:paddingHorizontal="12dp"
-            android:text="Lets say it's Answer 1"
-            android:textColor="@color/buttons_textColor"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@id/example_question"
-            app:layout_constraintStart_toStartOf="@id/example_question"
-            app:layout_constraintTop_toBottomOf="@id/example_question" />
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/question_text_border"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/second_answer_button"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/question_text_border"
+                >
+
+                <TextView
+                    android:id="@+id/example_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/radio_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/radio_button_answer2_selector"
-            android:button="@android:color/transparent"
-            android:paddingHorizontal="12dp"
-            android:text="Lets say it's Answer 2"
-            android:textColor="@color/buttons_textColor"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@id/example_question"
-            app:layout_constraintStart_toStartOf="@id/example_question"
-            app:layout_constraintTop_toBottomOf="@id/example_question" />
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="@+id/question_box"
+            app:layout_constraintStart_toStartOf="@+id/question_box"
+            app:layout_constraintTop_toBottomOf="@+id/question_box">
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/third_answer_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/radio_button_answer3_selector"
-            android:button="@android:color/transparent"
-            android:paddingHorizontal="12dp"
-            android:text="Lets say it's Answer 3"
-            android:textColor="@color/buttons_textColor"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@id/example_question"
-            app:layout_constraintStart_toStartOf="@id/example_question"
-            app:layout_constraintTop_toBottomOf="@id/example_question" />
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/first_answer_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/radio_button_answer1_selector"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Lets say it's Answer 1"
+                android:textColor="@color/buttons_textColor"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@id/example_question"
+                app:layout_constraintStart_toStartOf="@id/example_question"
+                app:layout_constraintTop_toBottomOf="@id/example_question" />
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/fourth_answer_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/radio_button_answer4_selector"
-            android:button="@android:color/transparent"
-            android:paddingHorizontal="12dp"
-            android:text="Lets say it's Answer 4"
-            android:textColor="@color/buttons_textColor"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@id/example_question"
-            app:layout_constraintStart_toStartOf="@id/example_question"
-            app:layout_constraintTop_toBottomOf="@id/example_question" />
-    </RadioGroup>
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/second_answer_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/radio_button_answer2_selector"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Lets say it's Answer 2"
+                android:textColor="@color/buttons_textColor"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@id/example_question"
+                app:layout_constraintStart_toStartOf="@id/example_question"
+                app:layout_constraintTop_toBottomOf="@id/example_question" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_submit_answer"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="90dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@android:color/transparent"
-        android:hint="@string/submit_answer_text"
-        android:textColorHint="@color/tab_unselected"
-        app:cornerRadius="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radio_group"
-        app:strokeColor="@color/buttons_background"
-        app:strokeWidth="2dp" />
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/third_answer_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/radio_button_answer3_selector"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Lets say it's Answer 3"
+                android:textColor="@color/buttons_textColor"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@id/example_question"
+                app:layout_constraintStart_toStartOf="@id/example_question"
+                app:layout_constraintTop_toBottomOf="@id/example_question" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_next_question"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="90dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@android:color/transparent"
-        android:hint="@string/next_question_text"
-        android:textColorHint="@color/white"
-        android:visibility="gone"
-        app:cornerRadius="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radio_group"
-        app:strokeColor="@color/button_checked"
-        app:strokeWidth="2dp" />
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/fourth_answer_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/radio_button_answer4_selector"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Lets say it's Answer 4"
+                android:textColor="@color/buttons_textColor"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@id/example_question"
+                app:layout_constraintStart_toStartOf="@id/example_question"
+                app:layout_constraintTop_toBottomOf="@id/example_question" />
+        </RadioGroup>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_submit_answer"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="@string/submit_answer_text"
+            android:textColorHint="@color/unselected_color"
+            android:visibility="visible"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/radio_group"
+            app:strokeColor="@color/buttons_background"
+            app:strokeWidth="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_next_question"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="120dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="@string/next_question_text"
+            android:textColorHint="@color/white"
+            android:visibility="gone"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/radio_group"
+            app:strokeColor="@color/button_checked"
+            app:strokeWidth="4dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

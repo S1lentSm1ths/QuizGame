@@ -12,5 +12,6 @@
     <color name="buttons_textColor">#FFFFFFFF</color>
     <color name="layouts_background">#454141</color>
     <color name="tab_layout_background">#272626</color>
-    <color name="tab_unselected">#868383</color>
+    <color name="unselected_color">#868383</color>
+    <color name="color_wrong_answer">#C60B0B</color>
 </resources>

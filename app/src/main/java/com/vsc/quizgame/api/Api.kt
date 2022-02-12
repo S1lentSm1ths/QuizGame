@@ -1,14 +1,10 @@
-package com.vsc.quizgame.view.api
+package com.vsc.quizgame.api
 
-//import com.vsc.quizgame.view.Constants.Companion.BASE_URL
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.vsc.quizgame.view.api.QuestionApi
 
-class Api(private val questionApi: QuestionApi) {
+class Api (private val questionApi: QuestionApi){
 
-    suspend fun getQuestion(): Response<Question> {
-        return questionApi.getQuestion()
+    fun getQuestion(): QuizResponse?{
+        return questionApi.getQuestion().execute().body()
     }
 }
