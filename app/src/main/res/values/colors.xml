@@ -14,4 +14,6 @@
     <color name="tab_layout_background">#272626</color>
     <color name="unselected_color">#868383</color>
     <color name="color_wrong_answer">#C60B0B</color>
+    <color name="internet_connected">#1AB32E</color>
+    <color name="internet_disconnected">#C30E0E</color>
 </resources>

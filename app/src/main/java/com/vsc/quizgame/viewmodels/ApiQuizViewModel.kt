@@ -15,9 +15,9 @@ class ApiQuizViewModel : ViewModel() {
     private val _questionLiveData = MutableLiveData<List<Question>?>()
     val questionLiveData: LiveData<List<Question>?> = _questionLiveData
 
-    fun refreshQuestion(){
+    fun refreshQuestion(category: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            val response = api.getQuestion()?.results
+            val response = api.getQuestion(category)?.results
 
             _questionLiveData.postValue(response)
 

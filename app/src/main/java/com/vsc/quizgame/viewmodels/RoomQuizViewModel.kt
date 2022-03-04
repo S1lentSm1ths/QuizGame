@@ -9,13 +9,13 @@ import kotlinx.coroutines.launch
 class RoomQuizViewModel(app: Application) : AndroidViewModel(app) {
 
     private val quizDao = AppDataBase.getInstance(getApplication()).QuizDao()
-    private val _quizStatsLiveData = MutableLiveData<List<QuizPoints>?>()
-    val quizStatsLiveData: LiveData<List<QuizPoints>?> = _quizStatsLiveData
+    private val _quizStatsLiveData = MutableLiveData<List<QuizPoints>>()
+    val quizStatsLiveData: LiveData<List<QuizPoints>> = _quizStatsLiveData
 
     fun getStatsData() {
         viewModelScope.launch {
             val data = quizDao.getStats()
-            _quizStatsLiveData.postValue(data)
+            _quizStatsLiveData.postValue(data!!)
         }
     }
 

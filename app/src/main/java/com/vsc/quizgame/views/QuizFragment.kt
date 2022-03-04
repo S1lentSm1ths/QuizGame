@@ -1,26 +1,38 @@
 package com.vsc.quizgame.views
 
+import android.content.Context
+import android.content.Context.CONNECTIVITY_SERVICE
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.BoringLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.vsc.quizgame.R
 import com.vsc.quizgame.data.QuizPoints
 import com.vsc.quizgame.databinding.FragmentQuizBinding
+import com.vsc.quizgame.view.FragmentScoreboard
 import com.vsc.quizgame.view.viewmodels.ApiQuizViewModel
 import com.vsc.quizgame.viewmodels.RoomQuizViewModel
 import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.content.ContextCompat.getSystemService
+import com.vsc.quizgame.api.NetworkConnection
 
 
 class QuizFragment : Fragment() {
@@ -33,6 +45,8 @@ class QuizFragment : Fragment() {
     }
     private lateinit var binding: FragmentQuizBinding
     private lateinit var dropDownMenu: Spinner
+
+    //private lateinit var swipeToRefresh: SwipeRefreshLayout
     private lateinit var questionBox: LinearLayout
     private lateinit var questionText: TextView
     private lateinit var answersRadioGroup: RadioGroup
@@ -40,12 +54,20 @@ class QuizFragment : Fragment() {
     private lateinit var radioButtonSecondAnswer: AppCompatRadioButton
     private lateinit var radioButtonThirdAnswer: AppCompatRadioButton
     private lateinit var radioButtonFourthAnswer: AppCompatRadioButton
-    private lateinit var btnSubmitAnswer: Button
+    private lateinit var btnSubmitAnswer: MaterialButton
     private lateinit var btnNextQuestion: MaterialButton
+    private lateinit var btnContinue: MaterialButton
+    private lateinit var btnCancel: MaterialButton
+    private lateinit var networkInfoBox: ConstraintLayout
+    private lateinit var internetConnectedImage: ImageView
+    private lateinit var internetConnectedText: TextView
+    private lateinit var internetDisconnectedImage: ImageView
+    private lateinit var internetDisconnectedText: TextView
     private lateinit var correctAnswer: String
     private lateinit var serialCorrectAnswersTextView: TextView
     private var chosenCategoryOption: String = "No Category"
-    private var questionPosition = 0
+    private var chosenCategoryNumber: Int = 22
+    private var questionPosition: Int = 0
     private var isYourAnswerCorrect: Boolean = false
     private var isButtonSelected: Boolean = false
     private var isButtonNextQuestionClicked = true
@@ -59,22 +81,22 @@ class QuizFragment : Fragment() {
         binding = FragmentQuizBinding.inflate(inflater, container, false)
 
         initViews()
-        //initSpinner()
-        apiQuizViewModel.refreshQuestion()
-
+        apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+        initSpinner()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        getNewQuestion()
+        //swipeToRefresh()
+        setQuestionData()
         onRadioButtonsClicked()
         onSubmitButtonClicked()
     }
 
     private fun initViews() {
         dropDownMenu = binding.dropDownMenu
+        //swipeToRefresh = binding.swipeToRefresh
         questionBox = binding.questionBox
         questionText = binding.exampleQuestion
         answersRadioGroup = binding.radioGroup
@@ -84,7 +106,13 @@ class QuizFragment : Fragment() {
         radioButtonFourthAnswer = binding.fourthAnswerButton
         btnSubmitAnswer = binding.btnSubmitAnswer
         btnNextQuestion = binding.btnNextQuestion
-
+        btnContinue = binding.btnContinueCurrentCategory
+        btnCancel = binding.btnCancelCurrentCategory
+        networkInfoBox = binding.networkInfoBox
+        internetConnectedImage = binding.imageConnectedImage
+        internetConnectedText = binding.internetConnectedText
+        internetDisconnectedImage = binding.internetDisconnectedImage
+        internetDisconnectedText = binding.internetDisconnectedText
 
 //        serialCorrectAnswersTextView = binding.questionCounter
 
@@ -92,7 +120,6 @@ class QuizFragment : Fragment() {
 
     private fun initSpinner() {
 
-        val spinnerColor = ContextCompat.getColor(requireContext(), R.color.color_wrong_answer)
         val options = listOf(
             "Books",
             "Films",
@@ -126,13 +153,83 @@ class QuizFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                chosenCategoryOption = options[position]
+                    chosenCategoryOption = options[position]
+                    selectQuestionCategory()
+                        questionPosition = 0
+                        apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+                        setQuestionData()
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 Toast.makeText(requireContext(), "Please select option!", Toast.LENGTH_SHORT).show()
             }
 
+        }
+    }
+
+    private fun selectQuestionCategory() {
+        chosenCategoryNumber = when (chosenCategoryOption) {
+            "Books" -> {
+                10
+            }
+            "Films" -> {
+                11
+            }
+            "Music" -> {
+                12
+            }
+            "Theatres" -> {
+                13
+            }
+            "Video Games" -> {
+                15
+            }
+            "Science & Nature" -> {
+                17
+            }
+            "Computers" -> {
+                18
+            }
+            "Mathematics" -> {
+                19
+            }
+            "Mythology" -> {
+                20
+            }
+            "Sports" -> {
+                21
+            }
+            "Geography" -> {
+                22
+            }
+            "History" -> {
+                23
+            }
+            "Politics" -> {
+                24
+            }
+            "Art" -> {
+                25
+            }
+            "Celebrities" -> {
+                26
+            }
+            "Animals" -> {
+                27
+            }
+            "Vehicles" -> {
+                28
+            }
+            "Comics" -> {
+                29
+            }
+            "Anime & Manga" -> {
+                31
+            }
+            "Cartoon & Animations" -> {
+                32
+            }
+            else -> 22
         }
     }
 
@@ -197,8 +294,27 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private fun getNewQuestion() {
+    private fun onEndOfQuestions() {
+        insertStat()
 
+        answersRadioGroup.visibility = GONE
+        btnSubmitAnswer.visibility = GONE
+
+        questionText.text = getString(R.string.do_you_want_to_continue)
+        btnContinue.visibility = VISIBLE
+        btnCancel.visibility = VISIBLE
+
+        btnContinue.setOnClickListener {
+            questionPosition = 0
+            apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+            setQuestionData()
+        }
+        btnCancel.setOnClickListener() {
+            Toast.makeText(this.context, "Please select category!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setQuestionData() {
         apiQuizViewModel.questionLiveData.observe(this) { response ->
             if (response == null) {
                 Toast.makeText(this.context, "Unsuccessful api call!", Toast.LENGTH_LONG).show()
@@ -206,11 +322,12 @@ class QuizFragment : Fragment() {
             } else {
 
                 if (questionPosition == 10) {
-                    questionText.visibility = INVISIBLE
-                    questionBox.visibility = INVISIBLE
-                    answersRadioGroup.visibility = GONE
-                    btnSubmitAnswer.visibility = GONE
+                    onEndOfQuestions()
                 } else {
+                    answersRadioGroup.visibility = VISIBLE
+                    btnContinue.visibility = GONE
+                    btnCancel.visibility = GONE
+                    btnSubmitAnswer.visibility = VISIBLE
                     // Setting answers to random positions/buttons
                     when (val randomNumber = (0..3).random()) {
                         0 -> {
@@ -252,7 +369,6 @@ class QuizFragment : Fragment() {
                     } // The end of the condition
                     questionText.text = response[questionPosition].question
                     correctAnswer = response[questionPosition].correct_answer
-                    questionPosition += 1
                 }
             }
         }
@@ -260,9 +376,9 @@ class QuizFragment : Fragment() {
 
     private fun onSubmitButtonClicked() {
         btnSubmitAnswer.setOnClickListener {
-
+            questionPosition++
             if (isButtonSelected) {
-                setNextQuestion()
+                setNextQuestionOnTime()
                 if (isYourAnswerCorrect) {
                     Toast.makeText(this.context, "Correct answer!", Toast.LENGTH_LONG).show()
                     btnNextQuestion.strokeColor = ContextCompat.getColorStateList(
@@ -280,11 +396,10 @@ class QuizFragment : Fragment() {
                         requireContext(),
                         R.color.color_wrong_answer
                     )
-                    serialCorrectAnswers = 0
 
-                    val date = getCurrentDate()
-                    val currentStat = QuizPoints(points = serialCorrectAnswers, dateTime = date)
-                    roomQuizViewModel.insertStat(currentStat)
+                    insertStat()
+
+                    serialCorrectAnswers = 0
                 }
 
                 btnNextQuestion.visibility = VISIBLE
@@ -300,25 +415,32 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private fun setNextQuestion() {
-        btnNextQuestion.setOnClickListener {
-            isButtonNextQuestionClicked = false
-            onGetNewQuestion()
-        }
-
-        if (isButtonNextQuestionClicked) {
-            val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({
-                onGetNewQuestion()
-            }, 2500)
-            isButtonNextQuestionClicked = true
-        }
+    private fun insertStat() {
+        val date = getCurrentDate()
+        val currentStat = QuizPoints(points = serialCorrectAnswers, dateTime = date)
+        roomQuizViewModel.insertStat(currentStat)
     }
 
-    private fun onGetNewQuestion() {
+    private fun setNextQuestionOnTime() {
+        btnNextQuestion.setOnClickListener {
+            isButtonNextQuestionClicked = false
+            onGotNewQuestion()
+        }
+
+//        if (isButtonNextQuestionClicked) {
+//            val handler = Handler(Looper.getMainLooper())
+//            handler.postDelayed({
+//                onGotNewQuestion()
+//            }, 2500)
+//            isButtonNextQuestionClicked = true
+//        }
+    }
+
+
+    private fun onGotNewQuestion() {
         val colorUnselected = ContextCompat.getColor(requireContext(), R.color.unselected_color)
 
-        getNewQuestion()
+        setQuestionData()
         isButtonSelected = false
         isYourAnswerCorrect = false
 
@@ -349,5 +471,51 @@ class QuizFragment : Fragment() {
         dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
         return dateFormat.format(currentTime)
     }
+
+//    private fun swipeToRefresh() {
+//        swipeToRefresh.setOnRefreshListener {
+//            Toast.makeText(this.context, "Refreshed", Toast.LENGTH_LONG).show()
+//
+//            swipeToRefresh.isRefreshing = false
+//        }
+//    }
+
+//    private fun ifNetworkConnected(): Boolean {
+//        var connected = false
+//        val networkConnection = NetworkConnection(requireContext())
+//        networkConnection.observe(this, androidx.lifecycle.Observer { isConnected ->
+//            connected = isConnected
+//        })
+//        return connected
+//    }
+//
+//    private fun displayNetworkInformation(isConnected: Boolean) {
+//        if (isConnected) {
+//            networkInfoBox.visibility = GONE
+//            internetConnectedImage.visibility = GONE
+//            internetConnectedText.visibility = GONE
+//            internetDisconnectedImage.visibility = GONE
+//            internetDisconnectedText.visibility = GONE
+//            val handler = Handler(Looper.getMainLooper())
+//            handler.postDelayed({
+//                networkInfoBox.visibility = GONE
+//            }, 2500)
+//        } else {
+//            networkInfoBox.visibility = VISIBLE
+//            internetConnectedImage.visibility = GONE
+//            internetConnectedText.visibility = GONE
+//            internetDisconnectedImage.visibility = VISIBLE
+//            internetDisconnectedText.visibility = VISIBLE
+//        }
+//    }
+//
+//    private fun getApiRequest(){
+//        if (ifNetworkConnected()) {
+//            apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+//        }
+//        else {
+//            displayNetworkInformation(ifNetworkConnected())
+//        }
+//    }
 }
 //}

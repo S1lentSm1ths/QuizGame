@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.vsc.quizgame.R
 import com.vsc.quizgame.adapters.ScoreboardAdapter
 import com.vsc.quizgame.databinding.FragmentScoreboardBinding
@@ -21,6 +22,7 @@ class FragmentScoreboard : Fragment() {
     private val viewModel: RoomQuizViewModel by lazy {
         ViewModelProvider(this)[RoomQuizViewModel::class.java]
     }
+    private lateinit var swipeToRefresh: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
     private val adapter = ScoreboardAdapter()
 
@@ -31,14 +33,21 @@ class FragmentScoreboard : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentScoreboardBinding.inflate(inflater, container, false)
 
-        initRecyclerView()
+        initViews()
+        getQuizStatsData()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getQuizStatsData()
+
+        swipeToRefresh()
+        initRecyclerView()
+    }
+
+    private fun initViews() {
+        swipeToRefresh = binding.swipeToRefresh
     }
 
     private fun initRecyclerView() {
@@ -51,12 +60,15 @@ class FragmentScoreboard : Fragment() {
     private fun getQuizStatsData() {
         viewModel.getStatsData()
         viewModel.quizStatsLiveData.observe(this) {
-            if (it == null) {
-                error("Can not access data")
-            } else {
-                Toast.makeText(this.context, "You have data", Toast.LENGTH_LONG).show()
-                adapter.setStatsToRecycler(it)
-            }
+            adapter.setStatsToRecycler(it)
         }
     }
+
+    private fun swipeToRefresh() {
+        swipeToRefresh.setOnRefreshListener {
+            getQuizStatsData()
+            swipeToRefresh.isRefreshing = false
+        }
+    }
+
 }

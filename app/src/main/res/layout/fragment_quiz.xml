@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/layout_background"
+    tools:context=".views.QuizFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/layout_background"
         tools:context=".views.QuizFragment">
 
@@ -13,32 +17,37 @@
             android:id="@+id/drop_down_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_wrong_answer"
-            android:padding="20dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            android:spinnerMode="dialog"
-            />
+            android:spinnerMode="dropdown"
+            android:visibility="visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/dropDownBorder"
+            android:layout_width="match_parent"
+            android:layout_height="9dp"
+            android:background="@drawable/drop_down_border"
+            app:layout_constraintTop_toBottomOf="@+id/drop_down_menu">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/question_box"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/question_text_border"
             android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/dropDownBorder">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/question_text_border"
-                >
+                android:background="@drawable/question_text_border">
 
                 <TextView
                     android:id="@+id/example_question"
@@ -49,7 +58,7 @@
                     android:layout_marginEnd="8dp"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="22sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -58,11 +67,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
+
         <RadioGroup
             android:id="@+id/radio_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="@+id/question_box"
             app:layout_constraintStart_toStartOf="@+id/question_box"
             app:layout_constraintTop_toBottomOf="@+id/question_box">
@@ -166,5 +177,110 @@
             app:strokeColor="@color/button_checked"
             app:strokeWidth="4dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_continue_current_category"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="@string/yes"
+            android:textColorHint="@color/unselected_color"
+            android:visibility="gone"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/question_box"
+            app:strokeColor="@color/buttons_background"
+            app:strokeWidth="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel_current_category"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="@string/no"
+            android:textColorHint="@color/unselected_color"
+            android:visibility="gone"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_continue_current_category"
+            app:strokeColor="@color/buttons_background"
+            app:strokeWidth="4dp" />
+
+
+        <!--        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+        <!--            android:id="@+id/swipeToRefresh"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent">-->
+
+        <!--            <ListView-->
+        <!--                android:id="@+id/listView"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent">-->
+        <!--            </ListView>-->
+
+        <!--        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/network_info_box"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/image_connected_image"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/internet_connected"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/internet_connected_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connected"
+                android:textColor="@color/internet_connected"
+                android:textSize="20sp"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_connected_image" />
+
+            <ImageView
+                android:id="@+id/internet_disconnected_image"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/internet_disconnected"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/internet_disconnected_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/disconnected"
+                android:textColor="@color/internet_disconnected"
+                android:textSize="20sp"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/internet_disconnected_image" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</ScrollView>
