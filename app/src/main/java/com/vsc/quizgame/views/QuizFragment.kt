@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.getSystemService
 import com.vsc.quizgame.api.NetworkConnection
+import com.vsc.quizgame.view.api.Question
 
 
 class QuizFragment : Fragment() {
@@ -45,8 +46,6 @@ class QuizFragment : Fragment() {
     }
     private lateinit var binding: FragmentQuizBinding
     private lateinit var dropDownMenu: Spinner
-
-    //private lateinit var swipeToRefresh: SwipeRefreshLayout
     private lateinit var questionBox: LinearLayout
     private lateinit var questionText: TextView
     private lateinit var answersRadioGroup: RadioGroup
@@ -64,7 +63,6 @@ class QuizFragment : Fragment() {
     private lateinit var internetDisconnectedImage: ImageView
     private lateinit var internetDisconnectedText: TextView
     private lateinit var correctAnswer: String
-    private lateinit var serialCorrectAnswersTextView: TextView
     private var chosenCategoryOption: String = "No Category"
     private var chosenCategoryNumber: Int = 22
     private var questionPosition: Int = 0
@@ -88,15 +86,13 @@ class QuizFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //swipeToRefresh()
-        setQuestionData()
+        setDataToViews()
         onRadioButtonsClicked()
         onSubmitButtonClicked()
     }
 
     private fun initViews() {
         dropDownMenu = binding.dropDownMenu
-        //swipeToRefresh = binding.swipeToRefresh
         questionBox = binding.questionBox
         questionText = binding.exampleQuestion
         answersRadioGroup = binding.radioGroup
@@ -113,9 +109,6 @@ class QuizFragment : Fragment() {
         internetConnectedText = binding.internetConnectedText
         internetDisconnectedImage = binding.internetDisconnectedImage
         internetDisconnectedText = binding.internetDisconnectedText
-
-//        serialCorrectAnswersTextView = binding.questionCounter
-
     }
 
     private fun initSpinner() {
@@ -153,11 +146,11 @@ class QuizFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                    chosenCategoryOption = options[position]
-                    selectQuestionCategory()
-                        questionPosition = 0
-                        apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
-                        setQuestionData()
+                chosenCategoryOption = options[position]
+                getNumberOfCategory()
+                questionPosition = 0
+                apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+                setDataToViews()
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -167,7 +160,7 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private fun selectQuestionCategory() {
+    private fun getNumberOfCategory() {
         chosenCategoryNumber = when (chosenCategoryOption) {
             "Books" -> {
                 10
@@ -246,11 +239,7 @@ class QuizFragment : Fragment() {
                 btnSubmitAnswer.setHintTextColor(btnSubmitActiveColor)
                 val yourAnswer = radioButtonFirstAnswer.text.toString()
                 isButtonSelected = true
-
-                if (yourAnswer.contains(correctAnswer)) {
-                    isYourAnswerCorrect = true
-                    correctAnswer = "Неу"
-                }
+                checkSelectedAnswer(yourAnswer)
             }
         }
 
@@ -259,11 +248,7 @@ class QuizFragment : Fragment() {
                 btnSubmitAnswer.setHintTextColor(btnSubmitActiveColor)
                 val yourAnswer = radioButtonSecondAnswer.text.toString()
                 isButtonSelected = true
-
-                if (yourAnswer.contains(correctAnswer)) {
-                    isYourAnswerCorrect = true
-                    correctAnswer = "Неу"
-                }
+                checkSelectedAnswer(yourAnswer)
             }
         }
 
@@ -272,11 +257,7 @@ class QuizFragment : Fragment() {
                 btnSubmitAnswer.setHintTextColor(btnSubmitActiveColor)
                 val yourAnswer = radioButtonThirdAnswer.text.toString()
                 isButtonSelected = true
-
-                if (yourAnswer.contains(correctAnswer)) {
-                    isYourAnswerCorrect = true
-                    correctAnswer = "Неу"
-                }
+                checkSelectedAnswer(yourAnswer)
             }
         }
 
@@ -285,36 +266,42 @@ class QuizFragment : Fragment() {
                 btnSubmitAnswer.setHintTextColor(btnSubmitActiveColor)
                 val yourAnswer = radioButtonFourthAnswer.text.toString()
                 isButtonSelected = true
-
-                if (yourAnswer.contains(correctAnswer)) {
-                    isYourAnswerCorrect = true
-                    correctAnswer = "Неу"
-                }
+                checkSelectedAnswer(yourAnswer)
             }
+        }
+    }
+
+    private fun checkSelectedAnswer(yourAnswer: String) {
+        if (yourAnswer.contains(correctAnswer)) {
+            isYourAnswerCorrect = true
+            correctAnswer = "Неу"
         }
     }
 
     private fun onEndOfQuestions() {
         insertStat()
+        hideAndDisplayLastQuestionViews()
 
+        btnContinue.setOnClickListener {
+            questionPosition = 0
+            apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
+            setDataToViews()
+        }
+        btnCancel.setOnClickListener {
+            Toast.makeText(this.context, "Please select category!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun hideAndDisplayLastQuestionViews() {
         answersRadioGroup.visibility = GONE
         btnSubmitAnswer.visibility = GONE
 
         questionText.text = getString(R.string.do_you_want_to_continue)
         btnContinue.visibility = VISIBLE
         btnCancel.visibility = VISIBLE
-
-        btnContinue.setOnClickListener {
-            questionPosition = 0
-            apiQuizViewModel.refreshQuestion(chosenCategoryNumber)
-            setQuestionData()
-        }
-        btnCancel.setOnClickListener() {
-            Toast.makeText(this.context, "Please select category!", Toast.LENGTH_LONG).show()
-        }
     }
 
-    private fun setQuestionData() {
+    private fun setDataToViews() {
         apiQuizViewModel.questionLiveData.observe(this) { response ->
             if (response == null) {
                 Toast.makeText(this.context, "Unsuccessful api call!", Toast.LENGTH_LONG).show()
@@ -324,52 +311,59 @@ class QuizFragment : Fragment() {
                 if (questionPosition == 10) {
                     onEndOfQuestions()
                 } else {
-                    answersRadioGroup.visibility = VISIBLE
-                    btnContinue.visibility = GONE
-                    btnCancel.visibility = GONE
-                    btnSubmitAnswer.visibility = VISIBLE
-                    // Setting answers to random positions/buttons
-                    when (val randomNumber = (0..3).random()) {
-                        0 -> {
-                            radioButtonFirstAnswer.text = response[questionPosition].correct_answer
-                            radioButtonSecondAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber]
-                            radioButtonThirdAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber + 1]
-                            radioButtonFourthAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber + 2]
-                        }
-                        1 -> {
-                            radioButtonFirstAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 1]
-                            radioButtonSecondAnswer.text = response[questionPosition].correct_answer
-                            radioButtonThirdAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber]
-                            radioButtonFourthAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber + 1]
-                        }
-                        2 -> {
-                            radioButtonFirstAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 2]
-                            radioButtonSecondAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 1]
-                            radioButtonThirdAnswer.text = response[questionPosition].correct_answer
-                            radioButtonFourthAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber]
-                        }
-                        3 -> {
-                            radioButtonFirstAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 3]
-                            radioButtonSecondAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 2]
-                            radioButtonThirdAnswer.text =
-                                response[questionPosition].incorrect_answers[randomNumber - 1]
-                            radioButtonFourthAnswer.text = response[questionPosition].correct_answer
-                        }
-                    } // The end of the condition
+                    hideAndDisplayNewQuestionViews()
+                    setAnswersRandomPositions(response)
                     questionText.text = response[questionPosition].question
                     correctAnswer = response[questionPosition].correct_answer
                 }
+            }
+        }
+    }
+
+    private fun hideAndDisplayNewQuestionViews() {
+        answersRadioGroup.visibility = VISIBLE
+        btnContinue.visibility = GONE
+        btnCancel.visibility = GONE
+        btnSubmitAnswer.visibility = VISIBLE
+    }
+
+    private fun setAnswersRandomPositions(response: List<Question>) {
+        when (val randomNumber = (0..3).random()) {
+            0 -> {
+                radioButtonFirstAnswer.text = response[questionPosition].correct_answer
+                radioButtonSecondAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber]
+                radioButtonThirdAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber + 1]
+                radioButtonFourthAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber + 2]
+            }
+            1 -> {
+                radioButtonFirstAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 1]
+                radioButtonSecondAnswer.text = response[questionPosition].correct_answer
+                radioButtonThirdAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber]
+                radioButtonFourthAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber + 1]
+            }
+            2 -> {
+                radioButtonFirstAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 2]
+                radioButtonSecondAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 1]
+                radioButtonThirdAnswer.text = response[questionPosition].correct_answer
+                radioButtonFourthAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber]
+            }
+            3 -> {
+                radioButtonFirstAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 3]
+                radioButtonSecondAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 2]
+                radioButtonThirdAnswer.text =
+                    response[questionPosition].incorrect_answers[randomNumber - 1]
+                radioButtonFourthAnswer.text = response[questionPosition].correct_answer
             }
         }
     }
@@ -378,41 +372,53 @@ class QuizFragment : Fragment() {
         btnSubmitAnswer.setOnClickListener {
             questionPosition++
             if (isButtonSelected) {
-                setNextQuestionOnTime()
+                setNextQuestion()
                 if (isYourAnswerCorrect) {
-                    Toast.makeText(this.context, "Correct answer!", Toast.LENGTH_LONG).show()
-                    btnNextQuestion.strokeColor = ContextCompat.getColorStateList(
-                        requireContext(),
-                        R.color.button_checked
-                    )
-                    serialCorrectAnswers++
+                    onCorrectAnswer()
                 } else {
-                    Toast.makeText(
-                        this.context,
-                        "Wrong! The correct answer is ".plus(correctAnswer),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    btnNextQuestion.strokeColor = ContextCompat.getColorStateList(
-                        requireContext(),
-                        R.color.color_wrong_answer
-                    )
-
-                    insertStat()
-
-                    serialCorrectAnswers = 0
+                    onWrongAnswer()
                 }
 
                 btnNextQuestion.visibility = VISIBLE
                 btnSubmitAnswer.visibility = GONE
 //
-                radioButtonFirstAnswer.isEnabled = false
-                radioButtonSecondAnswer.isEnabled = false
-                radioButtonThirdAnswer.isEnabled = false
-                radioButtonFourthAnswer.isEnabled = false
+                disableRadioButtons()
             } else {
                 Toast.makeText(this.context, "Please select answer!", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun onCorrectAnswer() {
+        Toast.makeText(this.context, "Correct answer!", Toast.LENGTH_LONG).show()
+        btnNextQuestion.strokeColor = ContextCompat.getColorStateList(
+            requireContext(),
+            R.color.button_checked
+        )
+        serialCorrectAnswers++
+    }
+
+    private fun onWrongAnswer() {
+        Toast.makeText(
+            this.context,
+            "Wrong! The correct answer is ".plus(correctAnswer),
+            Toast.LENGTH_LONG
+        ).show()
+        btnNextQuestion.strokeColor = ContextCompat.getColorStateList(
+            requireContext(),
+            R.color.color_wrong_answer
+        )
+
+        insertStat()
+
+        serialCorrectAnswers = 0
+    }
+
+    private fun disableRadioButtons() {
+        radioButtonFirstAnswer.isEnabled = false
+        radioButtonSecondAnswer.isEnabled = false
+        radioButtonThirdAnswer.isEnabled = false
+        radioButtonFourthAnswer.isEnabled = false
     }
 
     private fun insertStat() {
@@ -421,12 +427,12 @@ class QuizFragment : Fragment() {
         roomQuizViewModel.insertStat(currentStat)
     }
 
-    private fun setNextQuestionOnTime() {
+    private fun setNextQuestion() {
         btnNextQuestion.setOnClickListener {
             isButtonNextQuestionClicked = false
             onGotNewQuestion()
         }
-
+    }
 //        if (isButtonNextQuestionClicked) {
 //            val handler = Handler(Looper.getMainLooper())
 //            handler.postDelayed({
@@ -434,18 +440,21 @@ class QuizFragment : Fragment() {
 //            }, 2500)
 //            isButtonNextQuestionClicked = true
 //        }
-    }
 
 
     private fun onGotNewQuestion() {
         val colorUnselected = ContextCompat.getColor(requireContext(), R.color.unselected_color)
 
-        setQuestionData()
+        setDataToViews()
         isButtonSelected = false
         isYourAnswerCorrect = false
 
         btnNextQuestion.visibility = GONE
 
+        prepareButtonsForNextQuestion(colorUnselected)
+    }
+
+    private fun prepareButtonsForNextQuestion(colorUnselected: Int) {
         btnSubmitAnswer.visibility = VISIBLE
         btnSubmitAnswer.setHintTextColor(colorUnselected)
 
